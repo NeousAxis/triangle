@@ -172,16 +172,16 @@ const MeditationTriangle = () => {
 
   // Dessiner des étoiles de fond
   const drawStars = (ctx, width, height) => {
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    for (let i = 0; i < 100; i++) {
-      const x = Math.random() * width;
-      const y = Math.random() * height;
-      const size = Math.random() * 1.5;
-      ctx.beginPath();
-      ctx.arc(x, y, size, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  };
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+  for (let i = 0; i < 100; i++) {
+    const x = (Math.sin(i * 13.7) * 0.5 + 0.5) * width;    // Position fixe basée sur i
+    const y = (Math.cos(i * 7.3) * 0.5 + 0.5) * height;    // Position fixe basée sur i
+    const size = (Math.sin(i * 3.14) * 0.5 + 0.5) * 1.5;   // Taille fixe basée sur i
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+};
 
   // Dessiner la Terre avec plus d'élégance
   const drawEarth = (ctx, centerX, centerY, rotation) => {
