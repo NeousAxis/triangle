@@ -1,0 +1,405 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+
+const MeditationTriangle = () => {
+  const [meditators, setMeditators] = useState([]);
+  const [newName, setNewName] = useState('');
+  const [triangles, setTriangles] = useState([]);
+  const canvasRef = useRef(null);
+  const animationRef = useRef(null);
+
+  // Ajouter un méditant
+  const addMeditator = () => {
+    if (newName.trim()) {
+      const newMeditator = {
+        id: Date.now(),
+        name: newName.trim(),
+        position: generateRandomPosition(),
+        color: generateElegantColor()
+      };
+      setMeditators(prev => [...prev, newMeditator]);
+      setNewName('');
+    }
+  };
+
+  // Générer une position aléatoire autour de la Terre
+  const generateRandomPosition = () => {
+    const radius = 200;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.random() * Math.PI;
+    
+    return {
+      x: Math.sin(phi) * Math.cos(theta) * radius,
+      y: Math.cos(phi) * radius,
+      z: Math.sin(phi) * Math.sin(theta) * radius
+    };
+  };
+
+  // Générer des couleurs plus élégantes
+  const generateElegantColor = () => {
+    const colors = [
+      '#64FFDA', // Cyan lumineux
+      '#E1BEE7', // Lavande
+      '#81C784', // Vert doux
+      '#FFB74D', // Orange doré
+      '#F48FB1', // Rose poudré
+      '#90CAF9', // Bleu ciel
+      '#BCAAA4', // Beige rosé
+      '#A5D6A7'  // Vert menthe
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
+  // Calculer les triangles
+  useEffect(() => {
+    if (meditators.length >= 3) {
+      const newTriangles = [];
+      for (let i = 0; i < meditators.length - 2; i += 3) {
+        if (i + 2 < meditators.length) {
+          newTriangles.push([
+            meditators[i],
+            meditators[i + 1],
+            meditators[i + 2]
+          ]);
+        }
+      }
+      setTriangles(newTriangles);
+    }
+  }, [meditators]);
+
+  // Animation de rotation de la Terre
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let rotation = 0;
+
+    const animate = () => {
+      // Fond dégradé spatial
+      const gradient = ctx.createRadialGradient(
+        canvas.width / 2, canvas.height / 2, 0,
+        canvas.width / 2, canvas.height / 2, canvas.width / 2
+      );
+      gradient.addColorStop(0, '#0F0F1E');
+      gradient.addColorStop(0.5, '#1A1A2E');
+      gradient.addColorStop(1, '#16213E');
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Étoiles de fond
+      drawStars(ctx, canvas.width, canvas.height);
+      
+      // Dessiner la Terre
+      drawEarth(ctx, canvas.width / 2, canvas.height / 2, rotation);
+      
+      // Dessiner les connexions d'abord (derrière les points)
+      triangles.forEach(triangle => {
+        drawTriangle(ctx, triangle, canvas.width / 2, canvas.height / 2, rotation);
+      });
+      
+      // Dessiner les méditants
+      meditators.forEach(meditator => {
+        drawMeditator(ctx, meditator, canvas.width / 2, canvas.height / 2, rotation);
+      });
+
+      rotation += 0.008;
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [meditators, triangles]);
+
+  // Dessiner des étoiles de fond
+  const drawStars = (ctx, width, height) => {
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    for (let i = 0; i < 100; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const size = Math.random() * 1.5;
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  };
+
+  // Dessiner la Terre avec plus d'élégance
+  const drawEarth = (ctx, centerX, centerY, rotation) => {
+    const radius = 80;
+    
+    // Ombre portée
+    ctx.beginPath();
+    ctx.arc(centerX + 4, centerY + 4, radius, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.fill();
+    
+    // Dégradé pour la Terre
+    const earthGradient = ctx.createRadialGradient(
+      centerX - 20, centerY - 20, 0,
+      centerX, centerY, radius
+    );
+    earthGradient.addColorStop(0, '#4FC3F7');
+    earthGradient.addColorStop(0.6, '#29B6F6');
+    earthGradient.addColorStop(1, '#0277BD');
+    
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.fillStyle = earthGradient;
+    ctx.fill();
+    
+    // Continents avec dégradé
+    const continentGradient = ctx.createRadialGradient(
+      centerX, centerY, 0,
+      centerX, centerY, radius
+    );
+    continentGradient.addColorStop(0, '#8BC34A');
+    continentGradient.addColorStop(1, '#689F38');
+    
+    ctx.fillStyle = continentGradient;
+    
+    // Formes de continents plus réalistes
+    for (let i = 0; i < 12; i++) {
+      const angle = (i * Math.PI / 6) + rotation;
+      const distance = radius * (0.4 + Math.sin(i) * 0.2);
+      const x = centerX + Math.cos(angle) * distance;
+      const y = centerY + Math.sin(angle) * distance;
+      const size = 6 + Math.sin(i * 2) * 4;
+      
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Reflet atmosphérique
+    const atmosphereGradient = ctx.createRadialGradient(
+      centerX, centerY, radius * 0.8,
+      centerX, centerY, radius * 1.2
+    );
+    atmosphereGradient.addColorStop(0, 'rgba(135, 206, 250, 0)');
+    atmosphereGradient.addColorStop(1, 'rgba(135, 206, 250, 0.3)');
+    
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius * 1.1, 0, Math.PI * 2);
+    ctx.fillStyle = atmosphereGradient;
+    ctx.fill();
+  };
+
+  // Projeter les coordonnées 3D en 2D
+  const project3D = (pos, centerX, centerY, rotation) => {
+    const rotatedX = pos.x * Math.cos(rotation) - pos.z * Math.sin(rotation);
+    const rotatedZ = pos.x * Math.sin(rotation) + pos.z * Math.cos(rotation);
+    
+    return {
+      x: centerX + rotatedX * 0.4,
+      y: centerY + pos.y * 0.4,
+      z: rotatedZ
+    };
+  };
+
+  // Dessiner un méditant avec plus d'élégance
+  const drawMeditator = (ctx, meditator, centerX, centerY, rotation) => {
+    const projected = project3D(meditator.position, centerX, centerY, rotation);
+    
+    if (projected.z > -150) {
+      const depth = (projected.z + 150) / 300;
+      const size = 3 + depth * 4;
+      const alpha = 0.6 + depth * 0.4;
+      
+      // Halo extérieur
+      const haloGradient = ctx.createRadialGradient(
+        projected.x, projected.y, 0,
+        projected.x, projected.y, size * 3
+      );
+      haloGradient.addColorStop(0, meditator.color + '40');
+      haloGradient.addColorStop(1, 'transparent');
+      
+      ctx.beginPath();
+      ctx.arc(projected.x, projected.y, size * 3, 0, Math.PI * 2);
+      ctx.fillStyle = haloGradient;
+      ctx.fill();
+      
+      // Point principal avec dégradé
+      const pointGradient = ctx.createRadialGradient(
+        projected.x - size * 0.3, projected.y - size * 0.3, 0,
+        projected.x, projected.y, size
+      );
+      pointGradient.addColorStop(0, '#FFFFFF');
+      pointGradient.addColorStop(0.3, meditator.color);
+      pointGradient.addColorStop(1, meditator.color + '80');
+      
+      ctx.globalAlpha = alpha;
+      ctx.beginPath();
+      ctx.arc(projected.x, projected.y, size, 0, Math.PI * 2);
+      ctx.fillStyle = pointGradient;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  };
+
+  // Dessiner un triangle avec élégance
+  const drawTriangle = (ctx, triangle, centerX, centerY, rotation) => {
+    const points = triangle.map(meditator => 
+      project3D(meditator.position, centerX, centerY, rotation)
+    );
+    
+    const visiblePoints = points.filter(p => p.z > -150);
+    if (visiblePoints.length >= 2) {
+      // Dégradé pour les lignes
+      const gradient = ctx.createLinearGradient(
+        points[0].x, points[0].y,
+        points[2].x, points[2].y
+      );
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
+      gradient.addColorStop(0.5, 'rgba(100, 255, 218, 0.4)');
+      gradient.addColorStop(1, 'rgba(255, 255, 255, 0.6)');
+      
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      ctx.lineTo(points[1].x, points[1].y);
+      ctx.lineTo(points[2].x, points[2].y);
+      ctx.closePath();
+      
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.7;
+      ctx.stroke();
+      
+      // Remplissage subtil
+      ctx.fillStyle = 'rgba(100, 255, 218, 0.05)';
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
+      {/* En-tête élégant */}
+      <div className="text-center py-12">
+        <motion.h1 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-5xl font-thin tracking-wider mb-6 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent"
+        >
+          Méditation Triangle
+        </motion.h1>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-lg opacity-70 font-light tracking-wide"
+        >
+          Connectons nos méditations pour guérir la planète
+        </motion.p>
+      </div>
+
+      <div className="flex flex-col xl:flex-row max-w-7xl mx-auto px-6 gap-8">
+        {/* Panneau latéral élégant */}
+        <div className="xl:w-1/3 space-y-6">
+          {/* Formulaire d'ajout */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="backdrop-blur-xl bg-white/10 rounded-2xl p-8 border border-white/20 shadow-2xl"
+          >
+            <h2 className="text-2xl font-light mb-6 text-center">Rejoindre la méditation</h2>
+            <div className="space-y-4">
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Votre prénom + 1ère lettre (ex: Sebastian D)"
+                className="w-full px-6 py-4 rounded-xl bg-white/10 text-white placeholder-gray-300 border border-white/30 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/50 transition-all font-light"
+                onKeyPress={(e) => e.key === 'Enter' && addMeditator()}
+              />
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={addMeditator}
+                className="w-full bg-gradient-to-r from-cyan-500/80 to-purple-500/80 hover:from-cyan-400 hover:to-purple-400 py-4 px-6 rounded-xl font-light text-lg transition-all duration-300 backdrop-blur-sm"
+              >
+                Commencer la méditation
+              </motion.button>
+            </div>
+          </motion.div>
+
+          {/* Liste des méditants */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="backdrop-blur-xl bg-white/10 rounded-2xl p-8 border border-white/20 shadow-2xl"
+          >
+            <h3 className="text-xl font-light mb-6 text-center">
+              Méditants connectés ({meditators.length})
+            </h3>
+            <div className="max-h-80 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-white/20">
+              {meditators.map((meditator, index) => (
+                <motion.div
+                  key={meditator.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-center space-x-4 p-3 rounded-lg bg-white/5 backdrop-blur-sm"
+                >
+                  <div
+                    className="w-4 h-4 rounded-full shadow-lg"
+                    style={{ 
+                      backgroundColor: meditator.color,
+                      boxShadow: `0 0 10px ${meditator.color}40`
+                    }}
+                  ></div>
+                  <span className="font-light tracking-wide">{meditator.name}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Statistiques élégantes */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+            className="backdrop-blur-xl bg-white/10 rounded-2xl p-8 border border-white/20 shadow-2xl"
+          >
+            <h3 className="text-xl font-light mb-4 text-center">Énergie collective</h3>
+            <div className="space-y-3 text-center">
+              <div className="flex justify-between items-center">
+                <span className="font-light opacity-80">Triangles formés</span>
+                <span className="text-cyan-400 font-light text-xl">{triangles.length}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-light opacity-80">Points isolés</span>
+                <span className="text-purple-400 font-light text-xl">{meditators.length % 3}</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Visualisation 3D élégante */}
+        <div className="xl:w-2/3">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+            className="backdrop-blur-xl bg-white/5 rounded-2xl p-8 border border-white/20 shadow-2xl"
+          >
+            <h2 className="text-2xl font-light mb-6 text-center">Notre Terre sacrée</h2>
+            <canvas
+              ref={canvasRef}
+              width={700}
+              height={600}
+              className="w-full h-auto rounded-xl shadow-inner"
+            />
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+};
