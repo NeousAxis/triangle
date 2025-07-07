@@ -14,8 +14,61 @@
     <div id="root"></div>
     
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+       const { useState, useEffect, useRef } = React;
         const { motion } = Motion;
+
+// ⭐ CRÉEZ ICI LA LISTE DE NOMS (NOUVELLE) :
+const virtualNames = [
+    'Sarah L.', 'Michael R.', 'Emma K.', 'David Chen', 'Luna M.', 'Alex Thompson',
+    'Maria Santos', 'James Wilson', 'Aisha Patel', 'Marco Silva', 'Yuki Tanaka',
+    'Sophie Dubois', 'Omar Hassan', 'Isabella Rodriguez', 'Kai Anderson',
+    'Priya Sharma', 'Lucas Martin', 'Zara Khan', 'Noah Williams', 'Aria Kim',
+    'Diego Martinez', 'Chloe Brown', 'Ravi Kumar', 'Nour Al-Rashid', 'Leo Zhang',
+    'Maya Johnson', 'Felix Mueller', 'Aaliyah Jones', 'Hassan Ali', 'Sakura Sato',
+    'Gabriel Costa', 'Amara Okafor', 'Liam O\'Connor', 'Ines Moreau', 'Arjun Gupta',
+    'Zoe Taylor', 'Carlos Mendez', 'Fatima Benali', 'Ethan Davis', 'Layla Ahmed',
+    'Victor Petrov', 'Mia Garcia', 'Raj Mehta', 'Elsa Johansson', 'Kai Nakamura',
+    'Ava Smith', 'Rafael Oliveira', 'Leila Hosseini', 'Oliver Green', 'Anaya Singh',
+    'Ben Clarke', 'Rosa Fernandez', 'Sven Larsson', 'Tara Malik', 'Jin Park',
+    'Eva Novak', 'Ahmed El-Masry', 'Grace Liu', 'Pablo Herrera', 'Nadia Volkov',
+    'Sam Mitchell', 'Lila Andersson', 'Youssef Zine', 'Jade Wong', 'Alex Rivera',
+    'Kira Petersen', 'Hamza Benoit', 'Nova Johnson', 'Enzo Romano', 'Anya Kozlov',
+    'Theo Müller', 'Asha Reddy', 'Ivan Popov', 'Celia Reyes', 'Kai Wu',
+    'Nora Berg', 'Dmitri Volkov', 'Zara Al-Zahra', 'Luke Henderson', 'Maya Patel',
+    'Anton Krebs', 'Lina Hassan', 'Max Sommer', 'Kaia Norse', 'Yuki Harada',
+    'Elena Rossi', 'Omar Farid', 'Iris Chen', 'Felix Andersson', 'Amina Kone',
+    'Lars Holm', 'Sira Diallo', 'Nico Blanc', 'Raya Tanaka', 'Finn Walsh',
+    'Naya Kumar', 'Erik Johansen', 'Zuri Asante', 'Axel Frost', 'Kira Volkov',
+    'Sage Williams', 'Amin Hosseini', 'Vera Smirnov', 'Rio Santos', 'Naia Kim',
+    'Elias Berg', 'Zola Okafor', 'Ori Levy', 'Juna Park', 'Vega Martinez',
+    'Neo Zhang', 'Talia Rossi', 'Davi Silva', 'Noor Ahmed', 'Kenzo Sato',
+    'Lia Müller', 'Taj Singh', 'Aurora Chen', 'Zen Wu', 'Kira Petrov',
+    'River Green', 'Naia Dubois', 'Sage Kumar', 'Luna Andersson', 'Kai Novak',
+    'Phoenix Taylor', 'Zen Nakamura', 'Nova Patel', 'Atlas Brown', 'Star Kim',
+    'Ocean Martinez', 'Sky Zhang', 'Dawn Williams', 'Rain Chen', 'Echo Santos',
+    'Sage Volkov', 'River Ahmed', 'Luna Hassan', 'Storm Singh', 'Aurora Park',
+    'Neo Tanaka', 'Zen Rossi', 'Kira Blanc', 'Nova Sato', 'Atlas Levy',
+    'Echo Mueller', 'River Okafor', 'Sage Andersson', 'Luna Petrov', 'Star Wu',
+    'Ocean Kumar', 'Sky Hassan', 'Dawn Martinez', 'Rain Zhang', 'Phoenix Chen',
+    'Zen Ahmed', 'Nova Santos', 'Atlas Kim', 'Echo Volkov', 'River Singh',
+    'Sage Brown', 'Luna Taylor', 'Storm Nakamura', 'Aurora Patel', 'Neo Williams',
+    'Kai Rossi', 'Star Dubois', 'Ocean Sato', 'Sky Levy', 'Dawn Mueller',
+    'Rain Okafor', 'Phoenix Andersson', 'Zen Petrov', 'Nova Wu', 'Atlas Hassan',
+    'Echo Kumar', 'River Martinez', 'Sage Zhang', 'Luna Chen', 'Storm Santos',
+    'Aurora Kim', 'Neo Volkov', 'Star Singh', 'Ocean Brown', 'Sky Taylor',
+    'Dawn Nakamura', 'Rain Patel', 'Phoenix Williams', 'Zen Rossi', 'Nova Blanc',
+    'Atlas Sato', 'Echo Levy', 'River Mueller', 'Sage Okafor', 'Luna Andersson',
+    'Storm Petrov', 'Aurora Wu', 'Neo Hassan', 'Star Kumar', 'Ocean Martinez',
+    'Sky Zhang', 'Dawn Chen', 'Rain Santos', 'Phoenix Kim', 'Zen Volkov',
+    'Nova Singh', 'Atlas Brown', 'Echo Taylor', 'River Nakamura', 'Sage Patel',
+    'Luna Williams', 'Storm Rossi', 'Aurora Dubois', 'Neo Sato', 'Star Levy',
+    'Ocean Mueller', 'Sky Okafor', 'Dawn Andersson', 'Rain Petrov', 'Phoenix Wu',
+    'Zen Hassan', 'Nova Kumar', 'Atlas Martinez', 'Echo Zhang', 'River Chen',
+    'Sage Santos', 'Luna Kim', 'Storm Volkov', 'Aurora Singh', 'Neo Brown',
+    'Star Taylor', 'Ocean Nakamura', 'Sky Patel', 'Dawn Williams', 'Rain Rossi'
+];
+
+const MeditationTriangle = () => {
 
         const MeditationTriangle = () => {
             const [meditators, setMeditators] = useState([]);
@@ -27,6 +80,24 @@
             const canvasRef = useRef(null);
             const animationRef = useRef(null);
             const timerRef = useRef(null);
+
+// ⭐ AJOUTEZ CE BLOC ICI :
+// Mettre à jour la communauté virtuelle
+useEffect(() => {
+    const updateCommunity = () => {
+        const virtualCommunity = createVirtualCommunity();
+        
+        setMeditators(prev => {
+            const realUsers = prev.filter(m => !m.isVirtual);
+            return [...realUsers, ...virtualCommunity];
+        });
+    };
+    
+    updateCommunity();
+    const interval = setInterval(updateCommunity, 10000);
+    
+    return () => clearInterval(interval);
+}, []);
 
             // Timer de méditation (10 minutes = 600 secondes)
             useEffect(() => {
@@ -96,6 +167,45 @@
                 return ((600 - meditationTimer) / 600) * 100;
             };
 
+            // ⭐ AJOUTEZ CES DEUX FONCTIONS ICI :
+
+// Système de communauté virtuelle permanente
+const createVirtualCommunity = () => {
+    const community = [];
+    const totalMeditators = 215;
+    
+    for (let i = 0; i < totalMeditators; i++) {
+        const sessionDuration = 600000; // 10 minutes
+        const pauseDuration = 1800000; // 30 minutes pause
+        const totalCycle = sessionDuration + pauseDuration;
+        
+        const offset = (i * totalCycle / totalMeditators) + (Math.random() * 300000);
+        const currentTime = Date.now();
+        const cyclePosition = (currentTime + offset) % totalCycle;
+        
+        const isActive = cyclePosition < sessionDuration;
+        
+        if (isActive) {
+            const timeLeft = sessionDuration - cyclePosition;
+            
+            community.push({
+                id: `virtual-${i}`,
+                name: virtualNames[i % virtualNames.length] || `Meditator ${i + 1}`,
+                position: generateRandomPosition(),
+                color: generateElegantColor(),
+                isVirtual: true,
+                timeLeft: Math.floor(timeLeft / 1000),
+                sessionStart: currentTime - cyclePosition
+            });
+        }
+    }
+    
+    return community;
+};
+
+            // Générer une position aléatoire autour de la Terre
+            const generateRandomPosition = () => {
+    
             // Générer une position aléatoire autour de la Terre
             const generateRandomPosition = () => {
                 const radius = 200;
@@ -189,6 +299,10 @@
                     meditators.forEach(meditator => {
                         drawMeditator(ctx, meditator, canvas.width / 2, canvas.height / 2, rotation);
                     });
+
+                    // ⭐ AJOUTEZ CETTE LIGNE ICI :
+                    // Dessiner les connexions entre triangles
+                    drawTriangleConnections(ctx, triangles, canvas.width / 2, canvas.height / 2, rotation);
 
                  // Rotation oscillante comme une vraie planète
                     rotation += 0.002 + Math.sin(Date.now() * 0.0001) * 0.001;
@@ -348,38 +462,124 @@ const drawEarth3D = (ctx, centerX, centerY, rotation) => {
                 }
             };
 
-            // Dessiner un triangle
-            const drawTriangle = (ctx, triangle, centerX, centerY, rotation) => {
-                const points = triangle.map(meditator => 
-                    project3D(meditator.position, centerX, centerY, rotation)
-                );
+                // ⭐ AJOUTEZ CETTE NOUVELLE FONCTION ICI :
+
+// Connexions entre triangles (réseau global)
+const drawTriangleConnections = (ctx, triangles, centerX, centerY, rotation) => {
+    if (triangles.length < 2) return;
+    
+    const time = Date.now() * 0.001;
+    
+    triangles.forEach((triangle1, i) => {
+        triangles.slice(i + 1).forEach((triangle2, j) => {
+            // Centre de chaque triangle
+            const center1 = triangle1.map(m => project3D(m.position, centerX, centerY, rotation))
+                .reduce((acc, p) => ({ x: acc.x + p.x/3, y: acc.y + p.y/3 }), { x: 0, y: 0 });
+            
+            const center2 = triangle2.map(m => project3D(m.position, centerX, centerY, rotation))
+                .reduce((acc, p) => ({ x: acc.x + p.x/3, y: acc.y + p.y/3 }), { x: 0, y: 0 });
+            
+            // Ligne de connexion subtile
+            const alpha = 0.3 + Math.sin(time + i + j) * 0.2;
+            ctx.beginPath();
+            ctx.moveTo(center1.x, center1.y);
+            ctx.lineTo(center2.x, center2.y);
+            ctx.strokeStyle = `rgba(255, 215, 0, ${alpha})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // Flux d'énergie entre triangles
+            const progress = (Math.sin(time * 0.5 + i * 0.3) + 1) / 2;
+            const flowX = center1.x + (center2.x - center1.x) * progress;
+            const flowY = center1.y + (center2.y - center1.y) * progress;
+            
+            ctx.beginPath();
+            ctx.arc(flowX, flowY, 2, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+            ctx.fill();
+        });
+    });
+};
+
+// Dessiner un triangle
+const drawTriangle = (ctx, triangle, centerX, centerY, rotation) => {
                 
-                const visiblePoints = points.filter(p => p.z > -150);
-                if (visiblePoints.length >= 2) {
-                    const gradient = ctx.createLinearGradient(
-                        points[0].x, points[0].y,
-                        points[2].x, points[2].y
-                    );
-                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
-                    gradient.addColorStop(0.5, 'rgba(100, 255, 218, 0.4)');
-                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.6)');
-                    
-                    ctx.beginPath();
-                    ctx.moveTo(points[0].x, points[0].y);
-                    ctx.lineTo(points[1].x, points[1].y);
-                    ctx.lineTo(points[2].x, points[2].y);
-                    ctx.closePath();
-                    
-                    ctx.strokeStyle = gradient;
-                    ctx.lineWidth = 2;
-                    ctx.globalAlpha = 0.7;
-                    ctx.stroke();
-                    
-                    ctx.fillStyle = 'rgba(100, 255, 218, 0.05)';
-                    ctx.fill();
-                    ctx.globalAlpha = 1;
-                }
-            };
+           // Animation des triangles avec flux d'énergie
+const drawTriangle = (ctx, triangle, centerX, centerY, rotation) => {
+    const points = triangle.map(meditator => 
+        project3D(meditator.position, centerX, centerY, rotation)
+    );
+    
+    const visiblePoints = points.filter(p => p.z > -150);
+    if (visiblePoints.length >= 2) {
+        const time = Date.now() * 0.002;
+        
+        // Dessiner les côtés du triangle avec effet doré
+        for (let i = 0; i < 3; i++) {
+            const start = points[i];
+            const end = points[(i + 1) % 3];
+            
+            // Ligne de base dorée
+            const baseGradient = ctx.createLinearGradient(start.x, start.y, end.x, end.y);
+            baseGradient.addColorStop(0, 'rgba(255, 215, 0, 0.8)');
+            baseGradient.addColorStop(0.5, 'rgba(255, 255, 0, 0.6)');
+            baseGradient.addColorStop(1, 'rgba(255, 215, 0, 0.8)');
+            
+            ctx.beginPath();
+            ctx.moveTo(start.x, start.y);
+            ctx.lineTo(end.x, end.y);
+            ctx.strokeStyle = baseGradient;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // Flux d'énergie qui traverse
+            const progress = (Math.sin(time + i * 2) + 1) / 2;
+            const flowX = start.x + (end.x - start.x) * progress;
+            const flowY = start.y + (end.y - start.y) * progress;
+            
+            // Particule lumineuse
+            const flowGradient = ctx.createRadialGradient(
+                flowX, flowY, 0,
+                flowX, flowY, 15
+            );
+            flowGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            flowGradient.addColorStop(0.3, 'rgba(255, 215, 0, 0.8)');
+            flowGradient.addColorStop(1, 'transparent');
+            
+            ctx.beginPath();
+            ctx.arc(flowX, flowY, 15, 0, Math.PI * 2);
+            ctx.fillStyle = flowGradient;
+            ctx.fill();
+        }
+        
+        // Centre du triangle avec effet de pulsation
+        const centerTriangleX = (points[0].x + points[1].x + points[2].x) / 3;
+        const centerTriangleY = (points[0].y + points[1].y + points[2].y) / 3;
+        
+        const pulseSize = 5 + Math.sin(time * 2) * 3;
+        const pulseGradient = ctx.createRadialGradient(
+            centerTriangleX, centerTriangleY, 0,
+            centerTriangleX, centerTriangleY, pulseSize * 2
+        );
+        pulseGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        pulseGradient.addColorStop(0.5, 'rgba(255, 215, 0, 0.6)');
+        pulseGradient.addColorStop(1, 'transparent');
+        
+        ctx.beginPath();
+        ctx.arc(centerTriangleX, centerTriangleY, pulseSize, 0, Math.PI * 2);
+        ctx.fillStyle = pulseGradient;
+        ctx.fill();
+        
+        // Remplissage doré transparent
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        ctx.lineTo(points[1].x, points[1].y);
+        ctx.lineTo(points[2].x, points[2].y);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.1)';
+        ctx.fill();
+    }
+};
 
             return React.createElement('div', {
                 className: "min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white"
@@ -504,9 +704,84 @@ const drawEarth3D = (ctx, centerX, centerY, rotation) => {
                                 className: "text-xl font-light mb-6 text-center"
                             }, `People connected (${meditators.length})`),
                             React.createElement('div', {
-                                key: 'list-content',
-                                className: "max-h-80 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-white/20"
-                            }, meditators.map((meditator, index) => 
+    key: 'list-content',
+    className: "max-h-80 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-white/20"
+}, [
+    // Séparateur pour les vrais utilisateurs
+    meditators.filter(m => !m.isVirtual).length > 0 && React.createElement('div', {
+        key: 'real-users-header',
+        className: "text-xs text-cyan-400 font-light border-b border-cyan-400/30 pb-2 mb-3"
+    }, "Vrais méditants"),
+    
+    // Afficher les vrais utilisateurs
+    ...meditators.filter(m => !m.isVirtual).map((meditator, index) => 
+        React.createElement(motion.div, {
+            key: meditator.id,
+            initial: { opacity: 0, x: -20 },
+            animate: { opacity: 1, x: 0 },
+            transition: { delay: index * 0.05 },
+            className: `flex items-center space-x-4 p-3 rounded-lg backdrop-blur-sm ${
+                currentMeditator && meditator.id === currentMeditator.id 
+                    ? 'bg-cyan-500/20 border border-cyan-400/30' 
+                    : 'bg-white/10'
+            }`
+        }, [
+            React.createElement('div', {
+                key: 'color-dot',
+                className: "w-4 h-4 rounded-full shadow-lg",
+                style: { 
+                    backgroundColor: meditator.color,
+                    boxShadow: `0 0 10px ${meditator.color}40`
+                }
+            }),
+            React.createElement('span', {
+                key: 'name',
+                className: "font-light tracking-wide"
+            }, meditator.name),
+            React.createElement('span', {
+                key: 'real-badge',
+                className: "text-xs text-green-400"
+            }, "🟢 Vous")
+        ])
+    ),
+    
+    // Séparateur pour la communauté virtuelle
+    React.createElement('div', {
+        key: 'virtual-header',
+        className: "text-xs text-purple-400 font-light border-b border-purple-400/30 pb-2 mb-3 mt-4"
+    }, `Communauté mondiale (${meditators.filter(m => m.isVirtual).length})`),
+    
+    // Afficher la communauté virtuelle
+    ...meditators.filter(m => m.isVirtual).slice(0, 10).map((meditator, index) => 
+        React.createElement(motion.div, {
+            key: meditator.id,
+            initial: { opacity: 0, x: -20 },
+            animate: { opacity: 1, x: 0 },
+            transition: { delay: index * 0.02 },
+            className: "flex items-center space-x-4 p-2 rounded-lg bg-white/5"
+        }, [
+            React.createElement('div', {
+                key: 'color-dot',
+                className: "w-3 h-3 rounded-full",
+                style: { backgroundColor: meditator.color }
+            }),
+            React.createElement('span', {
+                key: 'name',
+                className: "font-light text-sm opacity-80"
+            }, meditator.name),
+            React.createElement('span', {
+                key: 'time',
+                className: "text-xs text-purple-300 ml-auto"
+            }, `${Math.floor(meditator.timeLeft / 60)}:${(meditator.timeLeft % 60).toString().padStart(2, '0')}`)
+        ])
+    ),
+    
+    // Indicateur "et X autres..."
+    meditators.filter(m => m.isVirtual).length > 10 && React.createElement('div', {
+        key: 'more-indicator',
+        className: "text-xs text-center text-purple-300 opacity-60 py-2"
+    }, `... et ${meditators.filter(m => m.isVirtual).length - 10} autres méditants`)
+]) 
                                 React.createElement(motion.div, {
                                     key: meditator.id,
                                     initial: { opacity: 0, x: -20 },
