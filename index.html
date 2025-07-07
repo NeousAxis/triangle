@@ -190,7 +190,8 @@
                         drawMeditator(ctx, meditator, canvas.width / 2, canvas.height / 2, rotation);
                     });
 
-                    rotation += 0.003;
+                 // Rotation oscillante comme une vraie planète
+                    rotation += 0.002 + Math.sin(Date.now() * 0.0001) * 0.001;
                     animationRef.current = requestAnimationFrame(animate);
                 };
 
@@ -218,7 +219,7 @@
     
     // Image de la Terre (chargée une seule fois)
 const earthImage = new Image();
-earthImage.src = 'https://neousaxis.github.io/triangle/images/Terre vue de la espace - NASA.jpeg';
+earthImage.src = './images/Terre vue de la espace - NASA.jpeg';
 
 // Dessiner la Terre avec image NASA
 const drawEarth3D = (ctx, centerX, centerY, rotation) => {
@@ -234,15 +235,18 @@ const drawEarth3D = (ctx, centerX, centerY, rotation) => {
     if (earthImage.complete && earthImage.naturalWidth > 0) {
         ctx.save();
         
-        // Créer un masque circulaire
+        // Masque circulaire PARFAIT
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
         ctx.clip();
         
-        // Dessiner l'image avec rotation
+        // Dessiner l'image centrée et ajustée
         ctx.translate(centerX, centerY);
         ctx.rotate(rotation);
-        ctx.drawImage(earthImage, -radius * 1.2, -radius * 1.2, radius * 2.4, radius * 2.4);
+        
+        // Calcul pour centrer l'image sur la sphère
+        const imgSize = radius * 2.2; // Légèrement plus grand
+        ctx.drawImage(earthImage, -imgSize/2, -imgSize/2, imgSize, imgSize);
         
         ctx.restore();
     } else {
@@ -276,7 +280,6 @@ const drawEarth3D = (ctx, centerX, centerY, rotation) => {
     ctx.fillStyle = atmosphereGradient;
     ctx.fill();
 };
-
             // Projeter les coordonnées 3D en 2D
             const project3D = (pos, centerX, centerY, rotation) => {
                 const rotatedX = pos.x * Math.cos(rotation) - pos.z * Math.sin(rotation);
