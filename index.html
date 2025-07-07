@@ -818,7 +818,7 @@ const drawTriangle = (ctx, triangle, centerX, centerY, rotation) => {
                         ])
                     ]),
                     
-                   // Visualisation 3D
+// Visualisation 3D
 React.createElement('div', {
     key: 'visualization',
     className: "xl:w-2/3"
@@ -840,11 +840,13 @@ React.createElement('div', {
         className: "w-full h-auto rounded-xl shadow-inner"
     })
 ]))
+            ])  // ← FERMETURE DU TABLEAU PRINCIPAL
+        });     // ← FERMETURE DE LA FONCTION
 
         ReactDOM.render(
-    React.createElement(MeditationTriangle), 
-    document.getElementById('root')
-);
+            React.createElement(MeditationTriangle), 
+            document.getElementById('root')
+        );
     </script>
 </body>
 </html>
