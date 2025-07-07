@@ -781,36 +781,6 @@ const drawTriangle = (ctx, triangle, centerX, centerY, rotation) => {
         key: 'more-indicator',
         className: "text-xs text-center text-purple-300 opacity-60 py-2"
     }, `... et ${meditators.filter(m => m.isVirtual).length - 10} autres méditants`)
-]) 
-                                React.createElement(motion.div, {
-                                    key: meditator.id,
-                                    initial: { opacity: 0, x: -20 },
-                                    animate: { opacity: 1, x: 0 },
-                                    transition: { delay: index * 0.1 },
-                                    className: `flex items-center space-x-4 p-3 rounded-lg backdrop-blur-sm ${
-                                        currentMeditator && meditator.id === currentMeditator.id 
-                                            ? 'bg-cyan-500/20 border border-cyan-400/30' 
-                                            : 'bg-white/5'
-                                    }`
-                                }, [
-                                    React.createElement('div', {
-                                        key: 'color-dot',
-                                        className: "w-4 h-4 rounded-full shadow-lg",
-                                        style: { 
-                                            backgroundColor: meditator.color,
-                                            boxShadow: `0 0 10px ${meditator.color}40`
-                                        }
-                                    }),
-                                    React.createElement('span', {
-                                        key: 'name',
-                                        className: "font-light tracking-wide"
-                                    }, meditator.name),
-                                    currentMeditator && meditator.id === currentMeditator.id && React.createElement('span', {
-                                        key: 'status',
-                                        className: "text-xs text-cyan-400"
-                                    }, "En méditation")
-                                ])
-                            ))
                         ]),
                         
                         // Statistiques
