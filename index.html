@@ -215,32 +215,52 @@
                     ctx.fill();
                 }
             };
+    
+    // Image de la Terre (chargée une seule fois)
+const earthImage = new Image();
+earthImage.src = './images/Terre vue de la espace - NASA.jpeg';
 
-    // projection de la Terre en 3D
-    const drawEarth3D = (ctx, centerX, centerY, rotation) => {
+// Dessiner la Terre avec image NASA
+const drawEarth3D = (ctx, centerX, centerY, rotation) => {
     const radius = 100;
     
-    // Créer l'image de la Terre
-    const earthImage = new Image();
-    earthImage.src = './Terre vue de la espace - NASA.jpeg'; // Chemin vers votre image
-    
-    ctx.save();
-    
-    // Créer un masque circulaire pour la planète
+    // Ombre portée
     ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.clip();
+    ctx.arc(centerX + 4, centerY + 4, radius, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.fill();
     
-    // Dessiner l'image avec rotation
-    ctx.translate(centerX, centerY);
-    ctx.rotate(rotation);
-    ctx.drawImage(
-        earthImage, 
-        -radius * 1.2, -radius * 1.2, 
-        radius * 2.4, radius * 2.4
-    );
-    
-    ctx.restore();
+    // Vérifier si l'image est chargée
+    if (earthImage.complete && earthImage.naturalWidth > 0) {
+        ctx.save();
+        
+        // Créer un masque circulaire
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.clip();
+        
+        // Dessiner l'image avec rotation
+        ctx.translate(centerX, centerY);
+        ctx.rotate(rotation);
+        ctx.drawImage(earthImage, -radius * 1.2, -radius * 1.2, radius * 2.4, radius * 2.4);
+        
+        ctx.restore();
+    } else {
+        // Image de secours si pas encore chargée
+        const oceanGradient = ctx.createRadialGradient(
+            centerX - 30, centerY - 30, 0,
+            centerX, centerY, radius
+        );
+        oceanGradient.addColorStop(0, '#87CEEB');
+        oceanGradient.addColorStop(0.3, '#4682B4');
+        oceanGradient.addColorStop(0.7, '#1E90FF');
+        oceanGradient.addColorStop(1, '#191970');
+        
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.fillStyle = oceanGradient;
+        ctx.fill();
+    }
     
     // Atmosphère
     const atmosphereGradient = ctx.createRadialGradient(
