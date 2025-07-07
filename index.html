@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Méditation Triangle</title>
+    <title>Triangles Meditation</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -444,7 +444,7 @@
                             React.createElement('h2', {
                                 key: 'form-title',
                                 className: "text-2xl font-light mb-6 text-center"
-                            }, "Rejoindre la méditation"),
+                            }, "Join meditation"),
                             React.createElement('div', {
                                 key: 'form-content',
                                 className: "space-y-4"
@@ -454,7 +454,7 @@
                                     type: "text",
                                     value: newName,
                                     onChange: (e) => setNewName(e.target.value),
-                                    placeholder: "Votre prénom + 1ère lettre (ex: Sebastian D)",
+                                    placeholder: "Your Name (ex: Sebastian D)",
                                     className: "w-full px-6 py-4 rounded-xl bg-white/10 text-white placeholder-gray-300 border border-white/30 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/50 transition-all font-light",
                                     onKeyPress: (e) => e.key === 'Enter' && addMeditator()
                                 }),
@@ -464,7 +464,7 @@
                                     whileTap: { scale: 0.98 },
                                     onClick: addMeditator,
                                     className: "w-full bg-gradient-to-r from-cyan-500/80 to-purple-500/80 hover:from-cyan-400 hover:to-purple-400 py-4 px-6 rounded-xl font-light text-lg transition-all duration-300 backdrop-blur-sm"
-                                }, "Commencer la méditation (10 min)")
+                                }, "Start meditation (10 min)")
                             ])
                         ]),
                         
@@ -479,7 +479,7 @@
                             React.createElement('h3', {
                                 key: 'list-title',
                                 className: "text-xl font-light mb-6 text-center"
-                            }, `Méditants connectés (${meditators.length})`),
+                            }, `People connected (${meditators.length})`),
                             React.createElement('div', {
                                 key: 'list-content',
                                 className: "max-h-80 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-white/20"
@@ -526,7 +526,7 @@
                             React.createElement('h3', {
                                 key: 'stats-title',
                                 className: "text-xl font-light mb-4 text-center"
-                            }, "Énergie collective"),
+                            }, "Collective energy"),
                             React.createElement('div', {
                                 key: 'stats-content',
                                 className: "space-y-3 text-center"
@@ -537,7 +537,7 @@
                                 }, [
                                     React.createElement('span', {
                                         className: "font-light opacity-80"
-                                    }, "Triangles formés"),
+                                    }, "Connected triangles"),
                                     React.createElement('span', {
                                         className: "text-cyan-400 font-light text-xl"
                                     }, triangles.length)
@@ -548,7 +548,7 @@
                                 }, [
                                     React.createElement('span', {
                                         className: "font-light opacity-80"
-                                    }, "Points isolés"),
+                                    }, "triangular steps"),
                                     React.createElement('span', {
                                         className: "text-purple-400 font-light text-xl"
                                     }, meditators.length % 3)
