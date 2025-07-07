@@ -169,40 +169,6 @@ useEffect(() => {
 
             // ⭐ AJOUTEZ CES DEUX FONCTIONS ICI :
 
-// Système de communauté virtuelle permanente
-const createVirtualCommunity = () => {
-    const community = [];
-    const totalMeditators = 215;
-    
-    for (let i = 0; i < totalMeditators; i++) {
-        const sessionDuration = 600000; // 10 minutes
-        const pauseDuration = 1800000; // 30 minutes pause
-        const totalCycle = sessionDuration + pauseDuration;
-        
-        const offset = (i * totalCycle / totalMeditators) + (Math.random() * 300000);
-        const currentTime = Date.now();
-        const cyclePosition = (currentTime + offset) % totalCycle;
-        
-        const isActive = cyclePosition < sessionDuration;
-        
-        if (isActive) {
-            const timeLeft = sessionDuration - cyclePosition;
-            
-            community.push({
-                id: `virtual-${i}`,
-                name: virtualNames[i % virtualNames.length] || `Meditator ${i + 1}`,
-                position: generateRandomPosition(),
-                color: generateElegantColor(),
-                isVirtual: true,
-                timeLeft: Math.floor(timeLeft / 1000),
-                sessionStart: currentTime - cyclePosition
-            });
-        }
-    }
-    
-    return community;
-};
-
             // Générer une position aléatoire autour de la Terre
             const generateRandomPosition = () => {
     
@@ -244,6 +210,40 @@ const createVirtualCommunity = () => {
                     setTriangles(newTriangles);
                 }
             }, [meditators]);
+
+            // Système de communauté virtuelle permanente
+const createVirtualCommunity = () => {
+    const community = [];
+    const totalMeditators = 215;
+    
+    for (let i = 0; i < totalMeditators; i++) {
+        const sessionDuration = 600000; // 10 minutes
+        const pauseDuration = 1800000; // 30 minutes pause
+        const totalCycle = sessionDuration + pauseDuration;
+        
+        const offset = (i * totalCycle / totalMeditators) + (Math.random() * 300000);
+        const currentTime = Date.now();
+        const cyclePosition = (currentTime + offset) % totalCycle;
+        
+        const isActive = cyclePosition < sessionDuration;
+        
+        if (isActive) {
+            const timeLeft = sessionDuration - cyclePosition;
+            
+            community.push({
+                id: `virtual-${i}`,
+                name: virtualNames[i % virtualNames.length] || `Meditator ${i + 1}`,
+                position: generateRandomPosition(),
+                color: generateElegantColor(),
+                isVirtual: true,
+                timeLeft: Math.floor(timeLeft / 1000),
+                sessionStart: currentTime - cyclePosition
+            });
+        }
+    }
+    
+    return community;
+};
 
             // Projection 3D d'un point sur la sphère
             const projectSphere = (longitude, latitude, radius, rotation, centerX, centerY) => {
