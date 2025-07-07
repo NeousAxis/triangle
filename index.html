@@ -1,624 +1,589 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-
-const MeditationTriangle = () => {
-  const [meditators, setMeditators] = useState([]);
-  const [newName, setNewName] = useState('');
-  const [triangles, setTriangles] = useState([]);
-  const [meditationTimer, setMeditationTimer] = useState(0);
-  const [isTimerActive, setIsTimerActive] = useState(false);
-  const [currentMeditator, setCurrentMeditator] = useState(null);
-  const canvasRef = useRef(null);
-  const animationRef = useRef(null);
-  const timerRef = useRef(null);
-
-  // Timer de méditation (10 minutes = 600 secondes)
-  useEffect(() => {
-    if (isTimerActive && meditationTimer > 0) {
-      timerRef.current = setInterval(() => {
-        setMeditationTimer(prev => {
-          if (prev <= 1) {
-            setIsTimerActive(false);
-            if (currentMeditator) {
-              setMeditators(prevMeds => 
-                prevMeds.filter(med => med.id !== currentMeditator.id)
-              );
-              setCurrentMeditator(null);
-            }
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      clearInterval(timerRef.current);
-    }
-
-    return () => clearInterval(timerRef.current);
-  }, [isTimerActive, meditationTimer, currentMeditator]);
-
-  // Ajouter un méditant et démarrer le timer
-  const addMeditator = () => {
-    if (newName.trim()) {
-      const newMeditator = {
-        id: Date.now(),
-        name: newName.trim(),
-        position: generateRandomPosition(),
-        color: generateElegantColor(),
-        startTime: new Date()
-      };
-      
-      setMeditators(prev => [...prev, newMeditator]);
-      setCurrentMeditator(newMeditator);
-      setMeditationTimer(600);
-      setIsTimerActive(true);
-      setNewName('');
-    }
-  };
-
-  // Arrêter la méditation manuellement
-  const stopMeditation = () => {
-    setIsTimerActive(false);
-    setMeditationTimer(0);
-    if (currentMeditator) {
-      setMeditators(prevMeds => 
-        prevMeds.filter(med => med.id !== currentMeditator.id)
-      );
-      setCurrentMeditator(null);
-    }
-  };
-
-  // Formater le temps en mm:ss
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  // Calculer le pourcentage de progression
-  const getProgress = () => {
-    return ((600 - meditationTimer) / 600) * 100;
-  };
-
-  // Générer une position aléatoire autour de la Terre
-  const generateRandomPosition = () => {
-    const radius = 200;
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.random() * Math.PI;
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Méditation Triangle</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
     
-    return {
-      x: Math.sin(phi) * Math.cos(theta) * radius,
-      y: Math.cos(phi) * radius,
-      z: Math.sin(phi) * Math.sin(theta) * radius
-    };
-  };
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        const { motion } = Motion;
 
-  // Générer des couleurs plus élégantes
-  const generateElegantColor = () => {
-    const colors = [
-      '#64FFDA', '#E1BEE7', '#81C784', '#FFB74D', 
-      '#F48FB1', '#90CAF9', '#BCAAA4', '#A5D6A7'
-    ];
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
+        const MeditationTriangle = () => {
+            const [meditators, setMeditators] = useState([]);
+            const [newName, setNewName] = useState('');
+            const [triangles, setTriangles] = useState([]);
+            const [meditationTimer, setMeditationTimer] = useState(0);
+            const [isTimerActive, setIsTimerActive] = useState(false);
+            const [currentMeditator, setCurrentMeditator] = useState(null);
+            const canvasRef = useRef(null);
+            const animationRef = useRef(null);
+            const timerRef = useRef(null);
 
-  // Calculer les triangles
-  useEffect(() => {
-    if (meditators.length >= 3) {
-      const newTriangles = [];
-      for (let i = 0; i < meditators.length - 2; i += 3) {
-        if (i + 2 < meditators.length) {
-          newTriangles.push([
-            meditators[i],
-            meditators[i + 1],
-            meditators[i + 2]
-          ]);
-        }
-      }
-      setTriangles(newTriangles);
-    }
-  }, [meditators]);
+            // Timer de méditation (10 minutes = 600 secondes)
+            useEffect(() => {
+                if (isTimerActive && meditationTimer > 0) {
+                    timerRef.current = setInterval(() => {
+                        setMeditationTimer(prev => {
+                            if (prev <= 1) {
+                                setIsTimerActive(false);
+                                if (currentMeditator) {
+                                    setMeditators(prevMeds => 
+                                        prevMeds.filter(med => med.id !== currentMeditator.id)
+                                    );
+                                    setCurrentMeditator(null);
+                                }
+                                return 0;
+                            }
+                            return prev - 1;
+                        });
+                    }, 1000);
+                } else {
+                    clearInterval(timerRef.current);
+                }
 
-  // Animation de rotation de la Terre
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+                return () => clearInterval(timerRef.current);
+            }, [isTimerActive, meditationTimer, currentMeditator]);
 
-    const ctx = canvas.getContext('2d');
-    let rotation = 0;
+            // Ajouter un méditant et démarrer le timer
+            const addMeditator = () => {
+                if (newName.trim()) {
+                    const newMeditator = {
+                        id: Date.now(),
+                        name: newName.trim(),
+                        position: generateRandomPosition(),
+                        color: generateElegantColor(),
+                        startTime: new Date()
+                    };
+                    
+                    setMeditators(prev => [...prev, newMeditator]);
+                    setCurrentMeditator(newMeditator);
+                    setMeditationTimer(600);
+                    setIsTimerActive(true);
+                    setNewName('');
+                }
+            };
 
-    const animate = () => {
-      // Fond dégradé spatial
-      const gradient = ctx.createRadialGradient(
-        canvas.width / 2, canvas.height / 2, 0,
-        canvas.width / 2, canvas.height / 2, canvas.width / 2
-      );
-      gradient.addColorStop(0, '#0F0F1E');
-      gradient.addColorStop(0.5, '#1A1A2E');
-      gradient.addColorStop(1, '#16213E');
-      
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Étoiles fixes
-      drawStars(ctx, canvas.width, canvas.height);
-      
-      // Dessiner la Terre en 3D
-      drawEarth3D(ctx, canvas.width / 2, canvas.height / 2, rotation);
-      
-      // Dessiner les connexions
-      triangles.forEach(triangle => {
-        drawTriangle(ctx, triangle, canvas.width / 2, canvas.height / 2, rotation);
-      });
-      
-      // Dessiner les méditants
-      meditators.forEach(meditator => {
-        drawMeditator(ctx, meditator, canvas.width / 2, canvas.height / 2, rotation);
-      });
+            // Arrêter la méditation manuellement
+            const stopMeditation = () => {
+                setIsTimerActive(false);
+                setMeditationTimer(0);
+                if (currentMeditator) {
+                    setMeditators(prevMeds => 
+                        prevMeds.filter(med => med.id !== currentMeditator.id)
+                    );
+                    setCurrentMeditator(null);
+                }
+            };
 
-      rotation += 0.003; // Rotation plus lente
-      animationRef.current = requestAnimationFrame(animate);
-    };
+            // Formater le temps en mm:ss
+            const formatTime = (seconds) => {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            };
 
-    animate();
+            // Calculer le pourcentage de progression
+            const getProgress = () => {
+                return ((600 - meditationTimer) / 600) * 100;
+            };
 
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [meditators, triangles]);
+            // Générer une position aléatoire autour de la Terre
+            const generateRandomPosition = () => {
+                const radius = 200;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI;
+                
+                return {
+                    x: Math.sin(phi) * Math.cos(theta) * radius,
+                    y: Math.cos(phi) * radius,
+                    z: Math.sin(phi) * Math.sin(theta) * radius
+                };
+            };
 
-  // Dessiner des étoiles fixes
-  const drawStars = (ctx, width, height) => {
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    for (let i = 0; i < 100; i++) {
-      const x = (Math.sin(i * 13.7) * 0.5 + 0.5) * width;
-      const y = (Math.cos(i * 7.3) * 0.5 + 0.5) * height;
-      const size = (Math.sin(i * 3.14) * 0.5 + 0.5) * 1.5;
-      ctx.beginPath();
-      ctx.arc(x, y, size, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  };
+            // Générer des couleurs plus élégantes
+            const generateElegantColor = () => {
+                const colors = [
+                    '#64FFDA', '#E1BEE7', '#81C784', '#FFB74D', 
+                    '#F48FB1', '#90CAF9', '#BCAAA4', '#A5D6A7'
+                ];
+                return colors[Math.floor(Math.random() * colors.length)];
+            };
 
-  // Projection 3D d'un point sur la sphère
-  const projectSphere = (longitude, latitude, radius, rotation, centerX, centerY) => {
-    // Rotation autour de l'axe Y
-    const rotatedLon = longitude + rotation;
-    
-    // Coordonnées 3D sur la sphère
-    const x3d = radius * Math.cos(latitude) * Math.cos(rotatedLon);
-    const y3d = radius * Math.sin(latitude);
-    const z3d = radius * Math.cos(latitude) * Math.sin(rotatedLon);
-    
-    // Projection 2D
-    const x2d = centerX + x3d * 0.8;
-    const y2d = centerY + y3d * 0.8;
-    
-    return {
-      x: x2d,
-      y: y2d,
-      z: z3d,
-      visible: z3d > 0 // Visible si devant la sphère
-    };
-  };
+            // Calculer les triangles
+            useEffect(() => {
+                if (meditators.length >= 3) {
+                    const newTriangles = [];
+                    for (let i = 0; i < meditators.length - 2; i += 3) {
+                        if (i + 2 < meditators.length) {
+                            newTriangles.push([
+                                meditators[i],
+                                meditators[i + 1],
+                                meditators[i + 2]
+                            ]);
+                        }
+                    }
+                    setTriangles(newTriangles);
+                }
+            }, [meditators]);
 
-  // Dessiner la Terre en 3D
-  const drawEarth3D = (ctx, centerX, centerY, rotation) => {
-    const radius = 80;
+            // Projection 3D d'un point sur la sphère
+            const projectSphere = (longitude, latitude, radius, rotation, centerX, centerY) => {
+                const rotatedLon = longitude + rotation;
+                const x3d = radius * Math.cos(latitude) * Math.cos(rotatedLon);
+                const y3d = radius * Math.sin(latitude);
+                const z3d = radius * Math.cos(latitude) * Math.sin(rotatedLon);
+                
+                const x2d = centerX + x3d * 0.8;
+                const y2d = centerY + y3d * 0.8;
+                
+                return {
+                    x: x2d,
+                    y: y2d,
+                    z: z3d,
+                    visible: z3d > 0
+                };
+            };
+
+            // Animation de rotation de la Terre
+            useEffect(() => {
+                const canvas = canvasRef.current;
+                if (!canvas) return;
+
+                const ctx = canvas.getContext('2d');
+                let rotation = 0;
+
+                const animate = () => {
+                    // Fond dégradé spatial
+                    const gradient = ctx.createRadialGradient(
+                        canvas.width / 2, canvas.height / 2, 0,
+                        canvas.width / 2, canvas.height / 2, canvas.width / 2
+                    );
+                    gradient.addColorStop(0, '#0F0F1E');
+                    gradient.addColorStop(0.5, '#1A1A2E');
+                    gradient.addColorStop(1, '#16213E');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Étoiles fixes
+                    drawStars(ctx, canvas.width, canvas.height);
+                    
+                    // Dessiner la Terre en 3D
+                    drawEarth3D(ctx, canvas.width / 2, canvas.height / 2, rotation);
+                    
+                    // Dessiner les connexions
+                    triangles.forEach(triangle => {
+                        drawTriangle(ctx, triangle, canvas.width / 2, canvas.height / 2, rotation);
+                    });
+                    
+                    // Dessiner les méditants
+                    meditators.forEach(meditator => {
+                        drawMeditator(ctx, meditator, canvas.width / 2, canvas.height / 2, rotation);
+                    });
+
+                    rotation += 0.003;
+                    animationRef.current = requestAnimationFrame(animate);
+                };
+
+                animate();
+
+                return () => {
+                    if (animationRef.current) {
+                        cancelAnimationFrame(animationRef.current);
+                    }
+                };
+            }, [meditators, triangles]);
+
+            // Dessiner des étoiles fixes
+            const drawStars = (ctx, width, height) => {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                for (let i = 0; i < 100; i++) {
+                    const x = (Math.sin(i * 13.7) * 0.5 + 0.5) * width;
+                    const y = (Math.cos(i * 7.3) * 0.5 + 0.5) * height;
+                    const size = (Math.sin(i * 3.14) * 0.5 + 0.5) * 1.5;
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            };
+
+    // projection de la Terre en 3D
+    const drawEarth3D = (ctx, centerX, centerY, rotation) => {
+    const radius = 100;
     
-    // Ombre portée
-    ctx.beginPath();
-    ctx.arc(centerX + 4, centerY + 4, radius, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-    ctx.fill();
+    // Créer l'image de la Terre
+    const earthImage = new Image();
+    earthImage.src = './images/earth.jpg'; // Chemin vers votre image
     
-    // Base océanique avec dégradé 3D
-    const oceanGradient = ctx.createRadialGradient(
-      centerX - 30, centerY - 30, 0,
-      centerX, centerY, radius
-    );
-    oceanGradient.addColorStop(0, '#87CEEB');
-    oceanGradient.addColorStop(0.3, '#4682B4');
-    oceanGradient.addColorStop(0.7, '#1E90FF');
-    oceanGradient.addColorStop(1, '#191970');
-    
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.fillStyle = oceanGradient;
-    ctx.fill();
-    
-    // Continents avec projection 3D
-    const continents = [
-      // Afrique
-      { lon: 0.3, lat: 0.1, size: 25 },
-      { lon: 0.4, lat: -0.2, size: 20 },
-      { lon: 0.2, lat: 0.3, size: 15 },
-      
-      // Europe
-      { lon: 0.1, lat: 0.8, size: 12 },
-      { lon: 0.2, lat: 0.7, size: 10 },
-      
-      // Asie
-      { lon: 1.2, lat: 0.5, size: 30 },
-      { lon: 1.5, lat: 0.3, size: 25 },
-      { lon: 1.8, lat: 0.6, size: 20 },
-      
-      // Amérique du Nord
-      { lon: -1.5, lat: 0.6, size: 28 },
-      { lon: -1.3, lat: 0.8, size: 22 },
-      
-      // Amérique du Sud
-      { lon: -1.0, lat: -0.5, size: 20 },
-      { lon: -1.1, lat: -0.8, size: 18 },
-      
-      // Océanie
-      { lon: 2.3, lat: -0.4, size: 12 },
-      { lon: 2.5, lat: -0.3, size: 8 }
-    ];
-    
-    // Dessiner les continents avec projection sphérique
-    continents.forEach(continent => {
-      const projected = projectSphere(
-        continent.lon, 
-        continent.lat, 
-        radius * 0.95, 
-        rotation, 
-        centerX, 
-        centerY
-      );
-      
-      if (projected.visible) {
-        // Calculer l'éclairage (face au soleil vs ombre)
-        const lightAngle = continent.lon + rotation;
-        const lighting = Math.max(0.3, (Math.cos(lightAngle) + 1) / 2);
-        
-        // Couleur du continent selon l'éclairage
-        const baseGreen = {r: 76, g: 175, b: 80};
-        const finalColor = `rgb(${Math.floor(baseGreen.r * lighting)}, ${Math.floor(baseGreen.g * lighting)}, ${Math.floor(baseGreen.b * lighting)})`;
-        
-        // Taille selon la perspective
-        const perspectiveSize = continent.size * (0.5 + projected.z / radius * 0.5);
-        
-        ctx.beginPath();
-        ctx.arc(projected.x, projected.y, perspectiveSize * 0.3, 0, Math.PI * 2);
-        ctx.fillStyle = finalColor;
-        ctx.fill();
-      }
-    });
-    
-    // Nuages avec rotation légèrement différente
-    const cloudRotation = rotation * 0.7;
-    const clouds = [
-      { lon: 0.5, lat: 0.2, size: 15 },
-      { lon: 1.8, lat: 0.4, size: 12 },
-      { lon: -0.8, lat: 0.6, size: 18 },
-      { lon: -2.1, lat: -0.3, size: 14 },
-      { lon: 2.8, lat: -0.1, size: 10 }
-    ];
-    
-    clouds.forEach(cloud => {
-      const projected = projectSphere(
-        cloud.lon, 
-        cloud.lat, 
-        radius * 1.02, 
-        cloudRotation, 
-        centerX, 
-        centerY
-      );
-      
-      if (projected.visible) {
-        const perspectiveSize = cloud.size * (0.5 + projected.z / radius * 0.5);
-        
-        ctx.beginPath();
-        ctx.arc(projected.x, projected.y, perspectiveSize * 0.25, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-        ctx.fill();
-      }
-    });
-    
-    // Terminateur jour/nuit (ombre)
-    const terminatorGradient = ctx.createLinearGradient(
-      centerX - radius, centerY,
-      centerX + radius, centerY
-    );
-    terminatorGradient.addColorStop(0, 'rgba(0, 0, 50, 0.8)');
-    terminatorGradient.addColorStop(0.3, 'rgba(0, 0, 50, 0.4)');
-    terminatorGradient.addColorStop(0.7, 'rgba(0, 0, 50, 0)');
-    terminatorGradient.addColorStop(1, 'rgba(0, 0, 50, 0)');
-    
-    // Appliquer l'ombre selon la rotation
     ctx.save();
-    ctx.translate(centerX, centerY);
-    ctx.rotate(rotation + Math.PI/4);
-    ctx.translate(-centerX, -centerY);
     
+    // Créer un masque circulaire pour la planète
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.fillStyle = terminatorGradient;
-    ctx.fill();
+    ctx.clip();
+    
+    // Dessiner l'image avec rotation
+    ctx.translate(centerX, centerY);
+    ctx.rotate(rotation);
+    ctx.drawImage(
+        earthImage, 
+        -radius * 1.2, -radius * 1.2, 
+        radius * 2.4, radius * 2.4
+    );
     
     ctx.restore();
     
     // Atmosphère
     const atmosphereGradient = ctx.createRadialGradient(
-      centerX, centerY, radius * 0.9,
-      centerX, centerY, radius * 1.3
+        centerX, centerY, radius * 0.9,
+        centerX, centerY, radius * 1.3
     );
     atmosphereGradient.addColorStop(0, 'rgba(135, 206, 250, 0)');
-    atmosphereGradient.addColorStop(0.7, 'rgba(135, 206, 250, 0.2)');
+    atmosphereGradient.addColorStop(0.7, 'rgba(135, 206, 250, 0.3)');
     atmosphereGradient.addColorStop(1, 'rgba(135, 206, 250, 0)');
     
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius * 1.2, 0, Math.PI * 2);
     ctx.fillStyle = atmosphereGradient;
     ctx.fill();
-  };
-
-  // Projeter les coordonnées 3D en 2D
-  const project3D = (pos, centerX, centerY, rotation) => {
-    const rotatedX = pos.x * Math.cos(rotation) - pos.z * Math.sin(rotation);
-    const rotatedZ = pos.x * Math.sin(rotation) + pos.z * Math.cos(rotation);
-    
-    return {
-      x: centerX + rotatedX * 0.4,
-      y: centerY + pos.y * 0.4,
-      z: rotatedZ
-    };
-  };
-
-  // Dessiner un méditant
-  const drawMeditator = (ctx, meditator, centerX, centerY, rotation) => {
-    const projected = project3D(meditator.position, centerX, centerY, rotation);
-    
-    if (projected.z > -150) {
-      const depth = (projected.z + 150) / 300;
-      const size = 3 + depth * 4;
-      const alpha = 0.6 + depth * 0.4;
-      
-      const isCurrentMeditator = currentMeditator && meditator.id === currentMeditator.id;
-      
-      if (isCurrentMeditator) {
-        const pulseSize = size * (3 + Math.sin(Date.now() * 0.005) * 0.5);
-        const haloGradient = ctx.createRadialGradient(
-          projected.x, projected.y, 0,
-          projected.x, projected.y, pulseSize
-        );
-        haloGradient.addColorStop(0, meditator.color + '60');
-        haloGradient.addColorStop(0.5, meditator.color + '20');
-        haloGradient.addColorStop(1, 'transparent');
-        
-        ctx.beginPath();
-        ctx.arc(projected.x, projected.y, pulseSize, 0, Math.PI * 2);
-        ctx.fillStyle = haloGradient;
-        ctx.fill();
-      } else {
-        const haloGradient = ctx.createRadialGradient(
-          projected.x, projected.y, 0,
-          projected.x, projected.y, size * 3
-        );
-        haloGradient.addColorStop(0, meditator.color + '40');
-        haloGradient.addColorStop(1, 'transparent');
-        
-        ctx.beginPath();
-        ctx.arc(projected.x, projected.y, size * 3, 0, Math.PI * 2);
-        ctx.fillStyle = haloGradient;
-        ctx.fill();
-      }
-      
-      const pointGradient = ctx.createRadialGradient(
-        projected.x - size * 0.3, projected.y - size * 0.3, 0,
-        projected.x, projected.y, size
-      );
-      pointGradient.addColorStop(0, '#FFFFFF');
-      pointGradient.addColorStop(0.3, meditator.color);
-      pointGradient.addColorStop(1, meditator.color + '80');
-      
-      ctx.globalAlpha = alpha;
-      ctx.beginPath();
-      ctx.arc(projected.x, projected.y, isCurrentMeditator ? size * 1.3 : size, 0, Math.PI * 2);
-      ctx.fillStyle = pointGradient;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    }
-  };
-
-  // Dessiner un triangle
-  const drawTriangle = (ctx, triangle, centerX, centerY, rotation) => {
-    const points = triangle.map(meditator => 
-      project3D(meditator.position, centerX, centerY, rotation)
-    );
-    
-    const visiblePoints = points.filter(p => p.z > -150);
-    if (visiblePoints.length >= 2) {
-      const gradient = ctx.createLinearGradient(
-        points[0].x, points[0].y,
-        points[2].x, points[2].y
-      );
-      gradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
-      gradient.addColorStop(0.5, 'rgba(100, 255, 218, 0.4)');
-      gradient.addColorStop(1, 'rgba(255, 255, 255, 0.6)');
-      
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      ctx.lineTo(points[1].x, points[1].y);
-      ctx.lineTo(points[2].x, points[2].y);
-      ctx.closePath();
-      
-      ctx.strokeStyle = gradient;
-      ctx.lineWidth = 2;
-      ctx.globalAlpha = 0.7;
-      ctx.stroke();
-      
-      ctx.fillStyle = 'rgba(100, 255, 218, 0.05)';
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-      {/* En-tête élégant */}
-      <div className="text-center py-12">
-        <motion.h1 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-5xl font-thin tracking-wider mb-6 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent"
-        >
-          Méditation Triangle
-        </motion.h1>
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-lg opacity-70 font-light tracking-wide"
-        >
-          Connectons nos méditations pour guérir la planète
-        </motion.p>
-      </div>
-
-      <div className="flex flex-col xl:flex-row max-w-7xl mx-auto px-6 gap-8">
-        {/* Panneau latéral élégant */}
-        <div className="xl:w-1/3 space-y-6">
-          {/* Timer de méditation */}
-          {isTimerActive && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="backdrop-blur-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-2xl p-8 border border-cyan-400/30 shadow-2xl"
-            >
-              <h3 className="text-2xl font-light mb-4 text-center">Méditation en cours</h3>
-              <div className="text-center">
-                <div className="text-4xl font-light mb-4 text-cyan-400">
-                  {formatTime(meditationTimer)}
-                </div>
-                <div className="w-full bg-white/20 rounded-full h-2 mb-4">
-                  <div 
-                    className="bg-gradient-to-r from-cyan-400 to-purple-400 h-2 rounded-full transition-all duration-1000"
-                    style={{ width: `${getProgress()}%` }}
-                  ></div>
-                </div>
-                <p className="text-sm opacity-70 mb-4">
-                  Vous méditez en tant que <span className="text-cyan-400">{currentMeditator?.name}</span>
-                </p>
-                <button
-                  onClick={stopMeditation}
-                  className="bg-red-500/80 hover:bg-red-400 px-6 py-2 rounded-xl font-light transition-all"
-                >
-                  Terminer la méditation
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Formulaire d'ajout */}
-          {!isTimerActive && (
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="backdrop-blur-xl bg-white/10 rounded-2xl p-8 border border-white/20 shadow-2xl"
-            >
-              <h2 className="text-2xl font-light mb-6 text-center">Rejoindre la méditation</h2>
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  placeholder="Votre prénom + 1ère lettre (ex: Sebastian D)"
-                  className="w-full px-6 py-4 rounded-xl bg-white/10 text-white placeholder-gray-300 border border-white/30 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/50 transition-all font-light"
-                  onKeyPress={(e) => e.key === 'Enter' && addMeditator()}
-                />
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={addMeditator}
-                  className="w-full bg-gradient-to-r from-cyan-500/80 to-purple-500/80 hover:from-cyan-400 hover:to-purple-400 py-4 px-6 rounded-xl font-light text-lg transition-all duration-300 backdrop-blur-sm"
-                >
-                  Commencer la méditation (10 min)
-                </motion.button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Liste des méditants */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="backdrop-blur-xl bg-white/10 rounded-2xl p-8 border border-white/20 shadow-2xl"
-          >
-            <h3 className="text-xl font-light mb-6 text-center">
-              Méditants connectés ({meditators.length})
-            </h3>
-            <div className="max-h-80 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-white/20">
-              {meditators.map((meditator, index) => (
-                <motion.div
-                  key={meditator.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`flex items-center space-x-4 p-3 rounded-lg backdrop-blur-sm ${
-                    currentMeditator && meditator.id === currentMeditator.id 
-                      ? 'bg-cyan-500/20 border border-cyan-400/30' 
-                      : 'bg-white/5'
-                  }`}
-                >
-                  <div
-                    className="w-4 h-4 rounded-full shadow-lg"
-                    style={{ 
-                      backgroundColor: meditator.color,
-                      boxShadow: `0 0 10px ${meditator.color}40`
-                    }}
-                  ></div>
-                  <span className="font-light tracking-wide">{meditator.name}</span>
-                  {currentMeditator && meditator.id === currentMeditator.id && (
-                    <span className="text-xs text-cyan-400">En méditation</span>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Statistiques élégantes */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-            className="backdrop-blur-xl bg-white/10 rounded-2xl p-8 border border-white/20 shadow-2xl"
-          >
-            <h3 className="text-xl font-light mb-4 text-center">Énergie collective</h3>
-            <div className="space-y-3 text-center">
-              <div className="flex justify-between items-center">
-                <span className="font-light opacity-80">Triangles formés</span>
-                <span className="text-cyan-400 font-light text-xl">{triangles.length}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-light opacity-80">Points isolés</span>
-                <span className="text-purple-400 font-light text-xl">{meditators.length % 3}</span>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Visualisation 3D élégante */}
-        <div className="xl:w-2/3">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-            className="backdrop-blur-xl bg-white/5 rounded-2xl p-8 border border-white/20 shadow-2xl"
-          >
-            <h2 className="text-2xl font-light mb-6 text-center">Notre Terre sacrée</h2>
-            <canvas
-              ref={canvasRef}
-              width={700}
-              height={600}
-              className="w-full h-auto rounded-xl shadow-inner"
-            />
-          </motion.div>
-        </div>
-      </div>
-    </div>
-  );
 };
+
+            // Projeter les coordonnées 3D en 2D
+            const project3D = (pos, centerX, centerY, rotation) => {
+                const rotatedX = pos.x * Math.cos(rotation) - pos.z * Math.sin(rotation);
+                const rotatedZ = pos.x * Math.sin(rotation) + pos.z * Math.cos(rotation);
+                
+                return {
+                    x: centerX + rotatedX * 0.4,
+                    y: centerY + pos.y * 0.4,
+                    z: rotatedZ
+                };
+            };
+
+            // Dessiner un méditant
+            const drawMeditator = (ctx, meditator, centerX, centerY, rotation) => {
+                const projected = project3D(meditator.position, centerX, centerY, rotation);
+                
+                if (projected.z > -150) {
+                    const depth = (projected.z + 150) / 300;
+                    const size = 3 + depth * 4;
+                    const alpha = 0.6 + depth * 0.4;
+                    
+                    const isCurrentMeditator = currentMeditator && meditator.id === currentMeditator.id;
+                    
+                    if (isCurrentMeditator) {
+                        const pulseSize = size * (3 + Math.sin(Date.now() * 0.005) * 0.5);
+                        const haloGradient = ctx.createRadialGradient(
+                            projected.x, projected.y, 0,
+                            projected.x, projected.y, pulseSize
+                        );
+                        haloGradient.addColorStop(0, meditator.color + '60');
+                        haloGradient.addColorStop(0.5, meditator.color + '20');
+                        haloGradient.addColorStop(1, 'transparent');
+                        
+                        ctx.beginPath();
+                        ctx.arc(projected.x, projected.y, pulseSize, 0, Math.PI * 2);
+                        ctx.fillStyle = haloGradient;
+                        ctx.fill();
+                    } else {
+                        const haloGradient = ctx.createRadialGradient(
+                            projected.x, projected.y, 0,
+                            projected.x, projected.y, size * 3
+                        );
+                        haloGradient.addColorStop(0, meditator.color + '40');
+                        haloGradient.addColorStop(1, 'transparent');
+                        
+                        ctx.beginPath();
+                        ctx.arc(projected.x, projected.y, size * 3, 0, Math.PI * 2);
+                        ctx.fillStyle = haloGradient;
+                        ctx.fill();
+                    }
+                    
+                    const pointGradient = ctx.createRadialGradient(
+                        projected.x - size * 0.3, projected.y - size * 0.3, 0,
+                        projected.x, projected.y, size
+                    );
+                    pointGradient.addColorStop(0, '#FFFFFF');
+                    pointGradient.addColorStop(0.3, meditator.color);
+                    pointGradient.addColorStop(1, meditator.color + '80');
+                    
+                    ctx.globalAlpha = alpha;
+                    ctx.beginPath();
+                    ctx.arc(projected.x, projected.y, isCurrentMeditator ? size * 1.3 : size, 0, Math.PI * 2);
+                    ctx.fillStyle = pointGradient;
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                }
+            };
+
+            // Dessiner un triangle
+            const drawTriangle = (ctx, triangle, centerX, centerY, rotation) => {
+                const points = triangle.map(meditator => 
+                    project3D(meditator.position, centerX, centerY, rotation)
+                );
+                
+                const visiblePoints = points.filter(p => p.z > -150);
+                if (visiblePoints.length >= 2) {
+                    const gradient = ctx.createLinearGradient(
+                        points[0].x, points[0].y,
+                        points[2].x, points[2].y
+                    );
+                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
+                    gradient.addColorStop(0.5, 'rgba(100, 255, 218, 0.4)');
+                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.6)');
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(points[0].x, points[0].y);
+                    ctx.lineTo(points[1].x, points[1].y);
+                    ctx.lineTo(points[2].x, points[2].y);
+                    ctx.closePath();
+                    
+                    ctx.strokeStyle = gradient;
+                    ctx.lineWidth = 2;
+                    ctx.globalAlpha = 0.7;
+                    ctx.stroke();
+                    
+                    ctx.fillStyle = 'rgba(100, 255, 218, 0.05)';
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                }
+            };
+
+            return React.createElement('div', {
+                className: "min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white"
+            }, [
+                // En-tête
+                React.createElement('div', {
+                    key: 'header',
+                    className: "text-center py-12"
+                }, [
+                    React.createElement(motion.h1, {
+                        key: 'title',
+                        initial: { opacity: 0, y: -20 },
+                        animate: { opacity: 1, y: 0 },
+                        className: "text-5xl font-thin tracking-wider mb-6 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent"
+                    }, "Méditation Triangle"),
+                    React.createElement(motion.p, {
+                        key: 'subtitle',
+                        initial: { opacity: 0 },
+                        animate: { opacity: 1 },
+                        transition: { delay: 0.3 },
+                        className: "text-lg opacity-70 font-light tracking-wide"
+                    }, "Connectons nos méditations pour guérir la planète")
+                ]),
+                
+                // Contenu principal
+                React.createElement('div', {
+                    key: 'main',
+                    className: "flex flex-col xl:flex-row max-w-7xl mx-auto px-6 gap-8"
+                }, [
+                    // Panneau latéral
+                    React.createElement('div', {
+                        key: 'sidebar',
+                        className: "xl:w-1/3 space-y-6"
+                    }, [
+                        // Timer
+                        isTimerActive && React.createElement(motion.div, {
+                            key: 'timer',
+                            initial: { opacity: 0, scale: 0.9 },
+                            animate: { opacity: 1, scale: 1 },
+                            className: "backdrop-blur-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-2xl p-8 border border-cyan-400/30 shadow-2xl"
+                        }, [
+                            React.createElement('h3', {
+                                key: 'timer-title',
+                                className: "text-2xl font-light mb-4 text-center"
+                            }, "Méditation en cours"),
+                            React.createElement('div', {
+                                key: 'timer-content',
+                                className: "text-center"
+                            }, [
+                                React.createElement('div', {
+                                    key: 'timer-display',
+                                    className: "text-4xl font-light mb-4 text-cyan-400"
+                                }, formatTime(meditationTimer)),
+                                React.createElement('div', {
+                                    key: 'progress-bar',
+                                    className: "w-full bg-white/20 rounded-full h-2 mb-4"
+                                }, React.createElement('div', {
+                                    className: "bg-gradient-to-r from-cyan-400 to-purple-400 h-2 rounded-full transition-all duration-1000",
+                                    style: { width: `${getProgress()}%` }
+                                })),
+                                React.createElement('p', {
+                                    key: 'timer-user',
+                                    className: "text-sm opacity-70 mb-4"
+                                }, [
+                                    "Vous méditez en tant que ",
+                                    React.createElement('span', {
+                                        className: "text-cyan-400"
+                                    }, currentMeditator?.name)
+                                ]),
+                                React.createElement('button', {
+                                    key: 'stop-button',
+                                    onClick: stopMeditation,
+                                    className: "bg-red-500/80 hover:bg-red-400 px-6 py-2 rounded-xl font-light transition-all"
+                                }, "Terminer la méditation")
+                            ])
+                        ]),
+                        
+                        // Formulaire
+                        !isTimerActive && React.createElement(motion.div, {
+                            key: 'form',
+                            initial: { opacity: 0, x: -20 },
+                            animate: { opacity: 1, x: 0 },
+                            className: "backdrop-blur-xl bg-white/10 rounded-2xl p-8 border border-white/20 shadow-2xl"
+                        }, [
+                            React.createElement('h2', {
+                                key: 'form-title',
+                                className: "text-2xl font-light mb-6 text-center"
+                            }, "Rejoindre la méditation"),
+                            React.createElement('div', {
+                                key: 'form-content',
+                                className: "space-y-4"
+                            }, [
+                                React.createElement('input', {
+                                    key: 'name-input',
+                                    type: "text",
+                                    value: newName,
+                                    onChange: (e) => setNewName(e.target.value),
+                                    placeholder: "Votre prénom + 1ère lettre (ex: Sebastian D)",
+                                    className: "w-full px-6 py-4 rounded-xl bg-white/10 text-white placeholder-gray-300 border border-white/30 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/50 transition-all font-light",
+                                    onKeyPress: (e) => e.key === 'Enter' && addMeditator()
+                                }),
+                                React.createElement(motion.button, {
+                                    key: 'start-button',
+                                    whileHover: { scale: 1.02 },
+                                    whileTap: { scale: 0.98 },
+                                    onClick: addMeditator,
+                                    className: "w-full bg-gradient-to-r from-cyan-500/80 to-purple-500/80 hover:from-cyan-400 hover:to-purple-400 py-4 px-6 rounded-xl font-light text-lg transition-all duration-300 backdrop-blur-sm"
+                                }, "Commencer la méditation (10 min)")
+                            ])
+                        ]),
+                        
+                        // Liste des méditants
+                        React.createElement(motion.div, {
+                            key: 'meditators-list',
+                            initial: { opacity: 0, x: -20 },
+                            animate: { opacity: 1, x: 0 },
+                            transition: { delay: 0.2 },
+                            className: "backdrop-blur-xl bg-white/10 rounded-2xl p-8 border border-white/20 shadow-2xl"
+                        }, [
+                            React.createElement('h3', {
+                                key: 'list-title',
+                                className: "text-xl font-light mb-6 text-center"
+                            }, `Méditants connectés (${meditators.length})`),
+                            React.createElement('div', {
+                                key: 'list-content',
+                                className: "max-h-80 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-white/20"
+                            }, meditators.map((meditator, index) => 
+                                React.createElement(motion.div, {
+                                    key: meditator.id,
+                                    initial: { opacity: 0, x: -20 },
+                                    animate: { opacity: 1, x: 0 },
+                                    transition: { delay: index * 0.1 },
+                                    className: `flex items-center space-x-4 p-3 rounded-lg backdrop-blur-sm ${
+                                        currentMeditator && meditator.id === currentMeditator.id 
+                                            ? 'bg-cyan-500/20 border border-cyan-400/30' 
+                                            : 'bg-white/5'
+                                    }`
+                                }, [
+                                    React.createElement('div', {
+                                        key: 'color-dot',
+                                        className: "w-4 h-4 rounded-full shadow-lg",
+                                        style: { 
+                                            backgroundColor: meditator.color,
+                                            boxShadow: `0 0 10px ${meditator.color}40`
+                                        }
+                                    }),
+                                    React.createElement('span', {
+                                        key: 'name',
+                                        className: "font-light tracking-wide"
+                                    }, meditator.name),
+                                    currentMeditator && meditator.id === currentMeditator.id && React.createElement('span', {
+                                        key: 'status',
+                                        className: "text-xs text-cyan-400"
+                                    }, "En méditation")
+                                ])
+                            ))
+                        ]),
+                        
+                        // Statistiques
+                        React.createElement(motion.div, {
+                            key: 'stats',
+                            initial: { opacity: 0, x: -20 },
+                            animate: { opacity: 1, x: 0 },
+                            transition: { delay: 0.4 },
+                            className: "backdrop-blur-xl bg-white/10 rounded-2xl p-8 border border-white/20 shadow-2xl"
+                        }, [
+                            React.createElement('h3', {
+                                key: 'stats-title',
+                                className: "text-xl font-light mb-4 text-center"
+                            }, "Énergie collective"),
+                            React.createElement('div', {
+                                key: 'stats-content',
+                                className: "space-y-3 text-center"
+                            }, [
+                                React.createElement('div', {
+                                    key: 'triangles-stat',
+                                    className: "flex justify-between items-center"
+                                }, [
+                                    React.createElement('span', {
+                                        className: "font-light opacity-80"
+                                    }, "Triangles formés"),
+                                    React.createElement('span', {
+                                        className: "text-cyan-400 font-light text-xl"
+                                    }, triangles.length)
+                                ]),
+                                React.createElement('div', {
+                                    key: 'isolated-stat',
+                                    className: "flex justify-between items-center"
+                                }, [
+                                    React.createElement('span', {
+                                        className: "font-light opacity-80"
+                                    }, "Points isolés"),
+                                    React.createElement('span', {
+                                        className: "text-purple-400 font-light text-xl"
+                                    }, meditators.length % 3)
+                                ])
+                            ])
+                        ])
+                    ]),
+                    
+                    // Visualisation 3D
+                    React.createElement('div', {
+                        key: 'visualization',
+                        className: "xl:w-2/3"
+                    }, React.createElement(motion.div, {
+                        initial: { opacity: 0, scale: 0.9 },
+                        animate: { opacity: 1, scale: 1 },
+                        transition: { delay: 0.3 },
+                        className: "backdrop-blur-xl bg-white/5 rounded-2xl p-8 border border-white/20 shadow-2xl"
+                    }, [
+                        React.createElement('h2', {
+                            key: 'canvas-title',
+                            className: "text-2xl font-light mb-6 text-center"
+                        }, "Notre Terre sacrée"),
+                        React.createElement('canvas', {
+                            key: 'canvas',
+                            ref: canvasRef,
+                            width: 700,
+                            height: 600,
+                            className: "w-full h-auto rounded-xl shadow-inner"
+                        })
+                    ]))
+                ])
+            ]);
+        };
+
+        ReactDOM.render(React.createElement(MeditationTriangle), document.getElementById('root'));
+    </script>
+</body>
+</html>
